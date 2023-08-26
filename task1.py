@@ -473,9 +473,12 @@ def analizar(lista):
                     else:
                         error = 'Bloque ',funcion,' no encontrada'
                         status = False
-                    if bloque[0] == ';' and bloque[1] == '}':
-                        error = 'Bloque ',funcion,' mal construido'
-                        status = False
+                    if len(bloque)>1:
+                        if bloque[0] == ';' and bloque[1] == '}':
+                            error = 'Bloque ',funcion,' mal construido'
+                            status = False
+                        else:
+                            bloque = bloque[1:]
                     else:
                         bloque = bloque[1:]
                 # Terminamos de chequear el bloque
@@ -488,7 +491,7 @@ def analizar(lista):
             p_final = complemeto_llave(lista[c+2:])
             bloque = lista[c+1:c+3+p_final]
             bloque_completo = bloque
-            while len(bloque) > 1 and status:
+            while (len(bloque) > 1) and status:
                 if bloque[0] in c_simple.keys():
                     # es una funcion simple
                     if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
@@ -537,29 +540,26 @@ def analizar(lista):
                                 error = 'Parametro ',i,' en la funcion ', bloque[0], ' no valido'
                                 status = False
                             else:
-                                bloque = bloque[3+pf:]
-                                print(bloque)
+                                bloque = bloque[3+pf:] 
                 else:
                     error = 'Bloque ',funcion,' no encontrada'
                     status = False
-                if bloque[0] == ';' and bloque[1] == '}':
-                    error = 'Bloque ',funcion,' mal construido'
-                    status = False
+                if len(bloque)>1:
+                    if bloque[0] == ';' and bloque[1] == '}':
+                        error = 'Bloque ',funcion,' mal construido'
+                        status = False
+                    else:
+                        bloque = bloque[1:]         
                 else:
-                    bloque = bloque[1:]
-                print(bloque)
-            c += 3 + p_final 
-            print(len(lista),c)
-            
+                    bloque = bloque[1:]   
+            c += 3 + p_final
         else:
             error = 'Funcion ',funcion,' mal declarada'
-            status = False   
-        #print(lista[c:])
-        
+            status = False
     if len(error) > 0:
-        print('Error :', error)
+        print('FALSE || Error :', error)
     else:
-        print('El programa es correcto')
+        print('TRUE || El programa es correcto')
 
 # print(lector('Practica.txt'))
 analizar(lector('Practica.txt'))
