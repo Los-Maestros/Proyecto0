@@ -107,6 +107,7 @@ def cont_parametros(texto):
         pos += 1
     return cont
 
+# diccionarios con las variables y funciones construidas por el usuario
 variables_parametro = {}
 funciones_parametro = {}
 
@@ -119,13 +120,6 @@ def construir_parametros(lista):
         c += 1
     return r,c
 
-def analizar_condiciones(lista):
-    if (lista[0] in cond_def.keys()):
-        pass
-    # FALTA ACABARLO YO!!!
-    else:
-        return False
-
 def analizar(lista):
     status = True
     c = 0
@@ -134,6 +128,7 @@ def analizar(lista):
     while len(lista) > c and status:
         palabra = lista[c]
         if palabra == 'defVar':
+            # CHEQUEO PARA VARIABLES
             if((lista[c+1] not in car) and (lista[c+2] not in car)):
                 variables_parametro[lista[c+1]] = lista[c+2]
                 c += 3
@@ -141,6 +136,7 @@ def analizar(lista):
                 error = 'Variable mal declarada'
                 status = False
         elif palabra == 'defProc':
+            # CHEQUEO PARA FUNCIONES
             funcion = lista[c+1]
             if(lista[c+2]=='('):
                 funciones_parametro[funcion] = []
@@ -158,6 +154,7 @@ def analizar(lista):
             if lista[c+1] == '{':
                 p_final = complemeto_llave(lista[c+2:])
                 bloque = lista[c+2:c+3+p_final]
+                bloque_completo = bloque
                 while len(bloque) > 1 and status:
                     if bloque[0] in c_simple.keys():
                         # es una funcion simple
@@ -176,7 +173,7 @@ def analizar(lista):
                                             error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
                                             status = False
                                     else:
-                                        if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                        if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
                                             error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
                                             status = False
                                 elif funcion == 'jump':
@@ -187,7 +184,7 @@ def analizar(lista):
                                         error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
                                         status = False
                                 elif funcion == 'walk' or funcion == 'leap':
-                                    if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                    if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
                                         error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
                                         status = False
                                     elif parametros[1] not in (c_simple[bloque[0]][1]):
@@ -196,14 +193,283 @@ def analizar(lista):
                             if status:
                                 bloque = bloque[3+pf:]                        
                     elif bloque[0] == 'if':
-                        # es un if
-                        pass
+                        # loop IF
+                        if bloque[1] in cond_def.keys():
+                            if bloque[1] == 'not':
+                                if not(bloque[2] == ':' and bloque[3] in cond_def.keys()):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[2:]
+                            if bloque[1] == 'facing':
+                                if not(bloque[2] == '(' and bloque[4] == ')' and bloque[3] in cond_def[bloque[1]]):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[5:]
+                            elif bloque[1] == 'can':
+                                if not(bloque[2] == '(' and bloque[3] in c_simple.keys()):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[3:]
+                                    if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                        bloque = bloque[3:]
+                                    else:
+                                        num_parameters = c_simple[bloque[0]][0]
+                                        parametros, pf = construir_parametros(bloque[2:])
+                                        if len(parametros) not in num_parameters:
+                                            error = 'Funcion ',funcion,' con extra/menos parametros'
+                                            status = False
+                                        else:
+                                            if len(parametros) == 1:
+                                                if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                                    if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                        status = False
+                                                else:
+                                                    if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                        status = False
+                                            elif funcion == 'jump':
+                                                if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                                elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                            elif funcion == 'walk' or funcion == 'leap':
+                                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                                elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                        if status:
+                                            bloque = bloque[3+pf:] 
+                            if bloque[1] == '{':
+                                bloque = bloque[2:]
+                                if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                    bloque = bloque[3:]
+                                else:
+                                    num_parameters = c_simple[bloque[0]][0]
+                                    parametros, pf = construir_parametros(bloque[2:])
+                                    if len(parametros) not in num_parameters:
+                                        error = 'Funcion ',funcion,' con extra/menos parametros'
+                                        status = False
+                                    else:
+                                        if len(parametros) == 1:
+                                            if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                                if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                            else:
+                                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                        elif funcion == 'jump':
+                                            if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                        elif funcion == 'walk' or funcion == 'leap':
+                                            if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                    if status:
+                                        bloque = bloque[4+pf:]
+                            else:
+                                error = 'Sintaxis',bloque_completo,' no valida'
+                                status = False
+                        else:
+                            error = 'Condicion ',bloque[1],' no valida'
+                            status = False
+                        if bloque[0] == 'else':
+                            bloque = bloque[1:]
+                            if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                bloque = bloque[3:]
+                            else:
+                                num_parameters = c_simple[bloque[0]][0]
+                                parametros, pf = construir_parametros(bloque[2:])
+                                if len(parametros) not in num_parameters:
+                                    error = 'Funcion ',funcion,' con extra/menos parametros'
+                                    status = False
+                                else:
+                                    if len(parametros) == 1:
+                                        if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                            if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                        else:
+                                            if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                    elif funcion == 'jump':
+                                        if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                            error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                            status = False
+                                        elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                            error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                            status = False
+                                    elif funcion == 'walk' or funcion == 'leap':
+                                        if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                            error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                            status = False
+                                        elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                            error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                            status = False
+                                if status:
+                                    bloque = bloque[3+pf:] 
+                        else:
+                            error = 'Sintaxis',bloque_completo,' no valida'
+                            status = False
                     elif bloque[0] == 'while':
-                        # es un while
-                        pass
+                        # loop WHILE
+                        if bloque[1] in cond_def.keys():
+                            if bloque[1] == 'not':
+                                if not(bloque[2] == ':' and bloque[3] in cond_def.keys()):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[2:]
+                            if bloque[1] == 'facing':
+                                if not(bloque[2] == '(' and bloque[4] == ')' and bloque[3] in cond_def[bloque[1]]):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[5:]
+                            elif bloque[1] == 'can':
+                                if not(bloque[2] == '(' and bloque[3] in c_simple.keys()):
+                                    error = 'Parametro de condicion ',bloque[3],' no valido'
+                                    status = False
+                                else:
+                                    bloque = bloque[3:]
+                                    if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                        bloque = bloque[3:]
+                                    else:
+                                        num_parameters = c_simple[bloque[0]][0]
+                                        parametros, pf = construir_parametros(bloque[2:])
+                                        if len(parametros) not in num_parameters:
+                                            error = 'Funcion ',funcion,' con extra/menos parametros'
+                                            status = False
+                                        else:
+                                            if len(parametros) == 1:
+                                                if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                                    if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                        status = False
+                                                else:
+                                                    if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                        status = False
+                                            elif funcion == 'jump':
+                                                if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                                elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                            elif funcion == 'walk' or funcion == 'leap':
+                                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                                elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                        if status:
+                                            bloque = bloque[3+pf:] 
+                            if bloque[1] == '{':
+                                bloque = bloque[2:]
+                                if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                    bloque = bloque[3:]
+                                else:
+                                    num_parameters = c_simple[bloque[0]][0]
+                                    parametros, pf = construir_parametros(bloque[2:])
+                                    if len(parametros) not in num_parameters:
+                                        error = 'Funcion ',funcion,' con extra/menos parametros'
+                                        status = False
+                                    else:
+                                        if len(parametros) == 1:
+                                            if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                                if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                            else:
+                                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                        elif funcion == 'jump':
+                                            if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                        elif funcion == 'walk' or funcion == 'leap':
+                                            if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                    if status:
+                                        bloque = bloque[4+pf:]
+                            else:
+                                error = 'Sintaxis',bloque_completo,' no valida'
+                                status = False
+                        else:
+                            error = 'Condicion ',bloque[1],' no valida'
+                            status = False
                     elif bloque[0] == 'repeat':
-                        # es un repeat
-                        pass
+                        # loop REPEAT
+                        if bloque[1] not in funciones_parametro[funcion] and bloque[1] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                            error = 'Parametro ',bloque[1],' en la funcion ', bloque[0], ' no valido'
+                            status = False
+                        else:
+                            if bloque[2] == 'repeat':
+                                bloque = bloque[3:]
+                                if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                                    bloque = bloque[3:]
+                                else:
+                                    num_parameters = c_simple[bloque[0]][0]
+                                    parametros, pf = construir_parametros(bloque[2:])
+                                    if len(parametros) not in num_parameters:
+                                        error = 'Funcion ',funcion,' con extra/menos parametros'
+                                        status = False
+                                    else:
+                                        if len(parametros) == 1:
+                                            if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                                if parametros[0] not in (c_simple[bloque[0]][1]):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                            else:
+                                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                    error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                    status = False
+                                        elif funcion == 'jump':
+                                            if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                        elif funcion == 'walk' or funcion == 'leap':
+                                            if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                            elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                                error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                                status = False
+                                    if status:
+                                        bloque = bloque[4+pf:]
+                            else:
+                                error = 'Sintaxis',bloque_completo,' no valida'
+                                status = False
                     else:
                         error = 'Bloque ',funcion,' no encontrada'
                         status = False
@@ -211,17 +477,85 @@ def analizar(lista):
                         error = 'Bloque ',funcion,' mal construido'
                         status = False
                     else:
-                        bloque = bloque[1:] 
+                        bloque = bloque[1:]
                 # Terminamos de chequear el bloque
-                c += 1 + p_final
+                c += 3 + p_final
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
-            # chequear loops
         elif palabra == '{':
-            # chequear la ejecucion de fin funciones_parametro
-            #TODO DANIEL ACA ENTRAS TU XD
-            pass
+            # CHEQUEO PARA EJECUCION FUNCIONES PARTE FINAL
+            p_final = complemeto_llave(lista[c+2:])
+            bloque = lista[c+1:c+3+p_final]
+            bloque_completo = bloque
+            while len(bloque) > 1 and status:
+                if bloque[0] in c_simple.keys():
+                    # es una funcion simple
+                    if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                        bloque = bloque[3:]
+                    else:
+                        num_parameters = c_simple[bloque[0]][0]
+                        parametros, pf = construir_parametros(bloque[2:])
+                        if len(parametros) not in num_parameters:
+                            error = 'Funcion ',funcion,' con extra/menos parametros'
+                            status = False
+                        else:
+                            if len(parametros) == 1:
+                                if bloque[0] == 'turn' or bloque[0] == 'turnto':
+                                    if parametros[0] not in (c_simple[bloque[0]][1]):
+                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                        status = False
+                                else:
+                                    if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                        error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                        status = False
+                            elif funcion == 'jump':
+                                if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                    status = False
+                                elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                    status = False
+                            elif funcion == 'walk' or funcion == 'leap':
+                                if parametros[0] not in funciones_parametro[funcion] and parametros[0] not in variables_parametro.keys() and not(parametros[0].isdigit()):
+                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                    status = False
+                                elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                    error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                    status = False
+                        if status:
+                            bloque = bloque[3+pf:] 
+                elif bloque[0] in funciones_parametro.keys():
+                    num_parameters = funciones_parametro[bloque[0]]
+                    parametros, pf = construir_parametros(bloque[2:])
+                    if len(parametros) == num_parameters:
+                        error = 'Funcion ',bloque[0],' con extra/menos parametros'
+                        status = False
+                    else:
+                        for i in parametros:
+                            if i not in variables_parametro.keys() and not(i.isdigit()):
+                                error = 'Parametro ',i,' en la funcion ', bloque[0], ' no valido'
+                                status = False
+                            else:
+                                bloque = bloque[3+pf:]
+                                print(bloque)
+                else:
+                    error = 'Bloque ',funcion,' no encontrada'
+                    status = False
+                if bloque[0] == ';' and bloque[1] == '}':
+                    error = 'Bloque ',funcion,' mal construido'
+                    status = False
+                else:
+                    bloque = bloque[1:]
+                print(bloque)
+            c += 3 + p_final 
+            print(len(lista),c)
+            
+        else:
+            error = 'Funcion ',funcion,' mal declarada'
+            status = False   
+        #print(lista[c:])
+        
     if len(error) > 0:
         print('Error :', error)
     else:

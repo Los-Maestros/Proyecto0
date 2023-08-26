@@ -7,7 +7,7 @@ defProc putCB (c , b)
 {
     drop( c ) ;
     letGo( b ) ;
-    walk( n )
+    walk( one )
 }
 
 defProc goNorth ()
