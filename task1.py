@@ -50,6 +50,30 @@ def lector2(texto):
     assert not cont, 'Hay parentesis que no se cierran'
     return respuesta
 
+# ------------------
+# VERIFICADORES
+# ------------------
+
+def complemeto_llave(archivo):
+    cont = 1
+    for i,j in enumerate(archivo):
+        if j == '{':
+            cont += 1
+        elif j == '}':
+            if not cont:
+                return i
+            cont -= 1
+
+def parametros(lista, var):
+    char = lista.pop(0)
+    while char != ')':
+        if char != ',':
+            var.append(char)
+        char = lista.pop(0)
+    return lista
+         
+
+
 variables_parametro = []
 funciones_parametro = {}
 c_simple = {'jump':['2',[0,0]], 
@@ -87,16 +111,18 @@ def analizar(lista):
                 funciones_parametro[funcion] = []
                 while (lista[c+3] != ')') and status:
                     if lista[c+3] != ',':
-                        funciones_parametro[lista[c+1]].append(lista[c+3])
+                        funciones_parametro[lista[c+1]]=[lista[c+3]]
                     if lista[c+3] == ',' and lista[c+4] == ',':
                         error = 'Funcion ',funcion,' con malos parametros'
                         status = False
                     c += 1
+                c += 3
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
             if lista[c+1] == '{':
-                p_final = complemeto_llave(lista[c+1:])
+                p_final = complemeto_llave(lista[c+2:])
+                print(p_final)
                 bloque = lista[c+1:c+p_final]
                 print(bloque)
                 break
@@ -113,29 +139,10 @@ def analizar(lista):
     else:
         print('El programa es correcto')
 
-# ------------------
-# VERIFICADORES
-# ------------------
+print(lector('Practica.txt'))
+analizar(lector('Practica.txt'))
 
-def complemeto_llave(archivo):
-    cont = 0
-    for i,j in enumerate(archivo):
-        if j == '{':
-            cont += 1
-        elif j == '}':
-            if not cont:
-                return i
-            cont -= 1
 
-def parametros(lista, var):
-    char = lista.pop(0)
-    while char != ')':
-        if char != ',':
-            var.append(char)
-        char = lista.pop(0)
-    return lista
-         
-         
 # ------------------
 # PROGRAMA
 # ------------------
@@ -161,7 +168,7 @@ def task(archivo):
             archivo = archivo[pos_final+1:]
     
     
-print(lector('Practica.txt'))
+
 
 
 
