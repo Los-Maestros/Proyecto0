@@ -112,7 +112,13 @@ def construir_parametros(lista):
             r.append(lista[c])
         c += 1
     return r,c
-        
+
+def analizar_condiciones(lista):
+    if (lista[0] in cond_def.keys()):
+        pass
+    # FALTA ACABARLO YO!!!
+    else:
+        return False
 
 def analizar(lista):
     status = True
@@ -146,9 +152,6 @@ def analizar(lista):
             if lista[c+1] == '{':
                 p_final = complemeto_llave(lista[c+2:])
                 bloque = lista[c+2:c+3+p_final]
-                print(bloque)
-                print(funciones_parametro)
-                print(variables_parametro)
                 while len(bloque) > 1 and status:
                     if bloque[0] in c_simple.keys():
                         # es una funcion simple
@@ -157,28 +160,35 @@ def analizar(lista):
                         else:
                             num_parameters = c_simple[bloque[0]][0]
                             parametros, pf = construir_parametros(bloque[2:])
-                            print(parametros)
                             if len(parametros) not in num_parameters:
                                 error = 'Funcion ',funcion,' con extra/menos parametros'
                                 status = False
                             else:
                                 if len(parametros) == 1:
-                                    if 'turn' in parametros or 'turnto' in parametros:
+                                    if bloque[0] == 'turn' or bloque[0] == 'turnto':
                                         if parametros[0] not in (c_simple[bloque[0]][1]):
-                                            error = 'Parametro ',parametros[0],' en la funcion ', bloque[0], ' no valido'
+                                            error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
                                             status = False
                                     else:
                                         if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
-                                            error = 'Parametro ',parametros[0],' en la funcion ', bloque[0], ' no valido'
+                                            error = 'Parametro ',parametros,' en la funcion ', bloque[0], ' no valido'
                                             status = False
                                 elif funcion == 'jump':
-                                    if not(parametros[0].isdigit()) or not(parametros[1].isdigit()):
+                                    if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
                                         error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
                                         status = False
-                                elif funcion == 'walk':
-                                    pass
-                                
-                            
+                                    elif parametros[1] not in funciones_parametro[funcion] and not(parametros[1].isdigit()):
+                                        error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                        status = False
+                                elif funcion == 'walk' or funcion == 'leap':
+                                    if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                        error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                        status = False
+                                    elif parametros[1] not in (c_simple[bloque[0]][1]):
+                                        error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
+                                        status = False
+                            if status:
+                                bloque = bloque[3+pf:]                        
                     elif bloque[0] == 'if':
                         # es un if
                         pass
@@ -195,7 +205,7 @@ def analizar(lista):
                         error = 'Bloque ',funcion,' mal construido'
                         status = False
                     else:
-                        bloque = bloque[1:]
+                        bloque = bloque[1:] 
                 # Terminamos de chequear el bloque
                 c += 1 + p_final
             else:
@@ -204,11 +214,10 @@ def analizar(lista):
             # chequear loops
         elif palabra == '{':
             # chequear la ejecucion de fin funciones_parametro
+            #TODO DANIEL ACA ENTRAS TU XD
             pass
-        
-            
     if len(error) > 0:
-        print('Error en', lista[c], ':', error)
+        print('Error :', error)
     else:
         print('El programa es correcto')
 
