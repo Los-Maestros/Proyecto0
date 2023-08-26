@@ -1,16 +1,36 @@
 #%%
 # Buenas tardes :D
-funciones = [
-    'jump', 'walk', 'leap', 'turn', 'turnto', 'drop', 'get', 'grab', 'letGo', 'nop', 'facing'
-]
+
+# -------------------
+# Variables
+# -------------------
+
+funciones = {}
 
 variables = {}
 
-extras = [
-    'if', 'else', 'while', 'repeat', 'times', 'can', 'not'
-]
-
 caracteres = ['{', '}', '(', ')', ';', ',']
+
+c_simple = {
+    
+    'jump':[[2],[]], 
+    'walk':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
+    'leap':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
+    'turn':[[1],['left', 'right', 'around']], 
+    'turnto':[[1],['north', 'south', 'west', 'east']], 
+    'drop':[[1],[]], 
+    'get':[[1],[]], 
+    'grab':[[1],[]], 
+    'letGo':[[1],[]], 
+    'nop':[[0],None]
+    
+    }
+
+cond_def = {
+    'facing' : ['north', 'south', 'west', 'east'],
+    'can' : list(c_simple.keys()),
+    'not' : ['facing', 'can', 'not']
+    }
 
 
 # -------------------
@@ -78,31 +98,17 @@ def parametros(lista, nombre):
     assert not comas, f'Función {nombre} con malos parametros'
     return lista
          
-
+def cont_parametros(texto):
+    cont = 0
+    pos = 1
+    while texto[pos] != ')':
+        if  texto[pos] != ',':
+            cont += 1
+        pos += 1
+    return cont
 
 variables_parametro = {}
 funciones_parametro = {}
-
-c_simple = {
-    
-    'jump':[[2],[]], 
-    'walk':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
-    'leap':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
-    'turn':[[1],['left', 'right', 'around']], 
-    'turnto':[[1],['north', 'south', 'west', 'east']], 
-    'drop':[[1],[]], 
-    'get':[[1],[]], 
-    'grab':[[1],[]], 
-    'letGo':[[1],[]], 
-    'nop':[[0],None]
-    
-    }
-
-cond_def = {
-    'facing':[[1],['north', 'south', 'west', 'east']],
-    'can':[[1],[c_simple.keys()]],
-    'not':[[1],['facing', 'can', 'not']]
-    }
 
 def construir_parametros(lista):
     r = []
@@ -251,7 +257,12 @@ def task(archivo):
         elif palabra == '{':
             pos_final = complemeto_llave(archivo)
             bloque = archivo[:pos_final]
-            # bla bla bla
+            
+            for pal in bloque:
+                if pal in c_simple:
+                    num_parametros = cont_parametros()
+            
+            
             archivo = archivo[pos_final+1:]
     
     
@@ -303,3 +314,4 @@ def process(body):
             for _ in range(int(count)):
                 process(newbody[:])
             body = body[closing+1:]
+# %%
