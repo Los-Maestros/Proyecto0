@@ -74,22 +74,32 @@ def parametros(lista, var):
          
 
 
-variables_parametro = []
+variables_parametro = {}
 funciones_parametro = {}
-c_simple = {'jump':['2',[0,0]], 
-                 'walk':['1 or 2',[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
-                 'leap':['1 or 2',[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
-                 'turn':['1',['left', 'right', 'around']], 
-                 'turnto':['1',['north', 'south', 'west', 'east']], 
-                 'drop':['1',[0]], 
-                 'get':['1',[0]], 
-                 'grab':['1',[0]], 
-                 'letGo':['1',[0]], 
-                 'nop':['0',None],}
-cond_def = {'facing':['1',['north', 'south', 'west', 'east']],
-                     'can':['1',[c_simple.keys()]],
-                     'not':['1',['facing', 'can', 'not']]}
+c_simple = {'jump':[[2],[0,0]], 
+                 'walk':[[1,2],[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
+                 'leap':[[1,2],[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
+                 'turn':[[1],['left', 'right', 'around']], 
+                 'turnto':[[1],['north', 'south', 'west', 'east']], 
+                 'drop':[[1],[0]], 
+                 'get':[[1],[0]], 
+                 'grab':[[1],[0]], 
+                 'letGo':[[1],[0]], 
+                 'nop':[[0],None],}
+cond_def = {'facing':[[1],['north', 'south', 'west', 'east']],
+                     'can':[[1],[c_simple.keys()]],
+                     'not':[[1],['facing', 'can', 'not']]}
 
+def construir_parametros(lista):
+    r = []
+    c = 0
+    pf = 0
+    while lista[c] != ')':
+        if lista[c] != ',':
+            r.append(lista[c])
+        pf += 1
+    return r,pf
+        
 
 def analizar(lista):
     status = True
@@ -100,8 +110,8 @@ def analizar(lista):
         palabra = lista[c]
         if palabra == 'defVar':
             if((lista[c+1] not in car) and (lista[c+2] not in car)):
+                variables_parametro[lista[c+1]] = lista[c+2]
                 c += 3
-                variables_parametro.append(lista[c])
             else:
                 error = 'Variable mal declarada'
                 status = False
@@ -111,7 +121,7 @@ def analizar(lista):
                 funciones_parametro[funcion] = []
                 while (lista[c+3] != ')') and status:
                     if lista[c+3] != ',':
-                        funciones_parametro[lista[c+1]]=[lista[c+3]]
+                        funciones_parametro[funcion] += [lista[c+3]]
                     if lista[c+3] == ',' and lista[c+4] == ',':
                         error = 'Funcion ',funcion,' con malos parametros'
                         status = False
@@ -122,8 +132,10 @@ def analizar(lista):
                 status = False
             if lista[c+1] == '{':
                 p_final = complemeto_llave(lista[c+2:])
-                bloque = lista[c+1:c+3+p_final]
+                bloque = lista[c+2:c+3+p_final]
                 print(bloque)
+                print(funciones_parametro)
+                print(variables_parametro)
                 cb = 0
                 while len(bloque) > 1 and status:
                     if bloque[0] in c_simple.keys():
@@ -132,6 +144,27 @@ def analizar(lista):
                             bloque = bloque[3:]
                         else:
                             num_parameters = c_simple[bloque[0]][0]
+                            parametros, pf = construir_parametros(bloque[1:])
+                            if len(parametros) > num_parameters:
+                                error = 'Funcion ',funcion,' con extra parametros'
+                                status = False
+                            else:
+                                if len(parametros) == 1:
+                                    if 'turn' in parametros or 'turnto' in parametros:
+                                        pass
+                                    else:
+                                        if (c_simple[bloque[1]][1][0]==0) and not(i.isdigit()):
+                                            error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
+                                            status = False
+                                else:
+                                    if (len(c_simple[bloque[1]][0][0])>1) and (i not in c_simple[bloque[1]][1]):
+                                        error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
+                                        status = False
+                                    if i not in funciones_parametro:
+                                        error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
+                                        status = False
+                                
+                            
                     elif bloque[0] == 'if':
                         # es un if
                         pass
@@ -147,6 +180,8 @@ def analizar(lista):
                     if bloque[0] == ';' and bloque[1] == '}':
                         error = 'Bloque ',funcion,' mal construido'
                         status = False
+                    else:
+                        bloque = bloque[1:]
                 # Terminamos de chequear el bloque
                 c += 1 + p_final
             else:
@@ -154,6 +189,7 @@ def analizar(lista):
                 status = False
             # chequear loops
         elif palabra == '{':
+            # chequear la ejecucion de fin funciones_parametro
             pass
         
             
