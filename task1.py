@@ -100,7 +100,7 @@ def parametros(lista, nombre):
          
 def cont_parametros(texto):
     cont = 0
-    pos = 1
+    pos = 2
     while texto[pos] != ')':
         if  texto[pos] != ',':
             cont += 1
@@ -588,13 +588,16 @@ def task(archivo):
             archivo.pop(0)
             parametros(archivo, nombre)
             
-        elif palabra == '{':
+            assert archivo.pop(0) == '{', 'Función mal delarada'
             pos_final = complemeto_llave(archivo)
             bloque = archivo[:pos_final]
             
-            for pal in bloque:
+            for pos, pal in enumerate(bloque):
                 if pal in c_simple:
-                    num_parametros = cont_parametros()
+                    num_parametros = cont_parametros(bloque[pos:])
+                    assert num_parametros in c_simple[pal][0], f'La función {pal}, no tiene todos los parametros.'
+                        
+                        
             
             
             archivo = archivo[pos_final+1:]
