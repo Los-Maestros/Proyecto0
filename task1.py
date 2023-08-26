@@ -38,8 +38,15 @@ def lector2(texto):
                 respuesta.append(palabra)
             if letra in caracteres:
                 respuesta.append(letra)
-            palabra = ''   
-    
+            palabra = '' 
+            
+        #? Se verifica si los parentesis se cierran
+        cont = 0
+        if letra == '{' or letra == '(':
+            cont += 1
+        if letra == '}' or letra == ')':
+            cont -= 1  
+    assert cont == 0, 'Hay parentesis que no se cierran'
     return respuesta
 
 variables_parametro = []
