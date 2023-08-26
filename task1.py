@@ -82,19 +82,27 @@ def parametros(lista, nombre):
 
 variables_parametro = {}
 funciones_parametro = {}
-c_simple = {'jump':[[2],[0,0]], 
-                 'walk':[[1,2],[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
-                 'leap':[[1,2],[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
-                 'turn':[[1],['left', 'right', 'around']], 
-                 'turnto':[[1],['north', 'south', 'west', 'east']], 
-                 'drop':[[1],[0]], 
-                 'get':[[1],[0]], 
-                 'grab':[[1],[0]], 
-                 'letGo':[[1],[0]], 
-                 'nop':[[0],None],}
-cond_def = {'facing':[[1],['north', 'south', 'west', 'east']],
-                     'can':[[1],[c_simple.keys()]],
-                     'not':[[1],['facing', 'can', 'not']]}
+
+c_simple = {
+    
+    'jump':[[2],[]], 
+    'walk':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
+    'leap':[[1,2],['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']], 
+    'turn':[[1],['left', 'right', 'around']], 
+    'turnto':[[1],['north', 'south', 'west', 'east']], 
+    'drop':[[1],[]], 
+    'get':[[1],[]], 
+    'grab':[[1],[]], 
+    'letGo':[[1],[]], 
+    'nop':[[0],None]
+    
+    }
+
+cond_def = {
+    'facing':[[1],['north', 'south', 'west', 'east']],
+    'can':[[1],[c_simple.keys()]],
+    'not':[[1],['facing', 'can', 'not']]
+    }
 
 def construir_parametros(lista):
     r = []
