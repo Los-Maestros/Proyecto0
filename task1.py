@@ -122,10 +122,10 @@ def analizar(lista):
                 status = False
             if lista[c+1] == '{':
                 p_final = complemeto_llave(lista[c+2:])
-                print(p_final)
                 bloque = lista[c+1:c+p_final]
-                print(bloque)
-                break
+                cb = 0
+                while len(bloque) > 0 and status:
+                    pass
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
