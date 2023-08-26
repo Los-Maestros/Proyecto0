@@ -12,6 +12,8 @@ extras = [
     'if', 'else', 'while', 'repeat', 'times', 'can', 'not'
 ]
 
+
+
 # -------------------
 # CARGA DE DATOS
 # -------------------
@@ -40,6 +42,45 @@ def lector2(texto):
     
     return respuesta
 
+variables_parametro = []
+funciones_parametro = {}
+
+def analizar(lista):
+    status = True
+    c = 0
+    error = ''
+    car = ['{', '}', '(', ')', ';', ',']
+    while len(lista) > c and status:
+        palabra = lista[c]
+        if palabra == 'defVar':
+            if((lista[c+1] not in car) and (lista[c+2] not in car)):
+                c += 3
+                variables_parametro.append(lista[c])
+            else:
+                error = 'Variable mal declarada'
+                status = False
+        elif palabra == 'defProc':
+            if(lista[c+2]=='('):
+                funciones_parametro[lista[c+1]] = []
+                i=0
+                while (lista[c+2+i] != ')') and status:
+                    if lista[c+2+i] != ',':
+                        funciones_parametro[lista[c+1]].append(lista[c+2+i])
+                    i += 1
+                    if lista[c+2+i] == ',' and lista[c+3+i] == ',':
+                        error = 'Funcion con malos parametros'
+                        status = False
+            else:
+                error = 'Funcion mal declarada'
+                status = False
+            
+        elif palabra == '{':
+            pass
+            
+    if len(error) > 0:
+        print('Error en', lista[c], ':', error)
+    else:
+        print('El programa es correcto')
 
 # ------------------
 # VERIFICADORES
