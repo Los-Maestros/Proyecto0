@@ -51,6 +51,20 @@ def lector2(texto):
 
 variables_parametro = []
 funciones_parametro = {}
+c_simple = {'jump':['2',[0,0]], 
+                 'walk':['1 or 2',[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
+                 'leap':['1 or 2',[0,['front', 'right', 'left', 'back', 'north', 'south', 'west', 'east']]], 
+                 'turn':['1',['left', 'right', 'around']], 
+                 'turnto':['1',['north', 'south', 'west', 'east']], 
+                 'drop':['1',[0]], 
+                 'get':['1',[0]], 
+                 'grab':['1',[0]], 
+                 'letGo':['1',[0]], 
+                 'nop':['0',None],}
+cond_def = {'facing':['1',['north', 'south', 'west', 'east']],
+                     'can':['1',[c_simple.keys()]],
+                     'not':['1',['facing', 'can', 'not']]}
+
 
 def analizar(lista):
     status = True
@@ -68,21 +82,30 @@ def analizar(lista):
                 status = False
         elif palabra == 'defProc':
             if(lista[c+2]=='('):
-                funciones_parametro[lista[c+1]] = []
-                i=0
-                while (lista[c+2+i] != ')') and status:
-                    if lista[c+2+i] != ',':
-                        funciones_parametro[lista[c+1]].append(lista[c+2+i])
-                    i += 1
-                    if lista[c+2+i] == ',' and lista[c+3+i] == ',':
-                        error = 'Funcion con malos parametros'
+                funcion = lista[c+1]
+                funciones_parametro[funcion] = []
+                while (lista[c+3] != ')') and status:
+                    if lista[c+3] != ',':
+                        funciones_parametro[lista[c+1]].append(lista[c+3])
+                    if lista[c+3] == ',' and lista[c+4] == ',':
+                        error = 'Funcion ',funcion,' con malos parametros'
                         status = False
+                    c += 1
             else:
-                error = 'Funcion mal declarada'
+                error = 'Funcion ',funcion,' mal declarada'
                 status = False
-            
+            if lista[c+1] == '{':
+                p_final = complemeto_llave(lista[c+1:])
+                bloque = lista[c+1:c+p_final]
+                print(bloque)
+                break
+            else:
+                error = 'Funcion ',funcion,' mal declarada'
+                status = False
+            # chequear loops
         elif palabra == '{':
             pass
+        
             
     if len(error) > 0:
         print('Error en', lista[c], ':', error)
@@ -94,7 +117,7 @@ def analizar(lista):
 # ------------------
 
 def complemeto_llave(archivo):
-    cont = 1
+    cont = 0
     for i,j in enumerate(archivo):
         if j == '{':
             cont += 1
