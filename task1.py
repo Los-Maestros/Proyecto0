@@ -1,4 +1,5 @@
 #%%
+# Buenas tardes :D
 funciones = [
     'jump', 'walk', 'leap', 'turn', 'turnto', 'drop', 'get', 'grab', 'letGo', 'nop', 'facing'
 ]
@@ -10,7 +11,10 @@ variables = [
 extras = [
     'if', 'else', 'while', 'repeat', 'times', 'can', 'not'
 ]
-caracteres = ['{', '}', '(', ')', ';']
+
+# -------------------
+# CARGA DE DATOS
+# -------------------
 
 def lector(file):
     archivo = open(file, 'r')
@@ -18,29 +22,51 @@ def lector(file):
     lista = lector2(texto)
     return lista
 
-def llaves(archivo):
-    cont = 0
-    for i,j in enumerate(archivo):
-        if j == '{' or j == '(':
-            cont += 1
-        elif j == '}' or j == ')':
-            cont -= 1
-    if cont == 0:
-        return True
-    return False
-
 def lector2(texto):
+    caracteres = ['{', '}', '(', ')', ';', ',']
     respuesta = []
     palabra = ''
+    
     for letra in texto:
         if letra not in caracteres and letra != ' ':
             palabra += letra
-        elif palabra != '':
-            respuesta.append(palabra)
+        
+        else:
+            if palabra:
+                respuesta.append(palabra)
             if letra in caracteres:
                 respuesta.append(letra)
             palabra = ''   
+    
     return respuesta
+
+
+# ------------------
+# VERIFICADORES
+# ------------------
+
+def complemeto_llave(archivo):
+    cont = 1
+    for i,j in enumerate(archivo):
+        if j == '{':
+            cont += 1
+        elif j == '}':
+            if not cont:
+                return i
+            cont -= 1
+
+def parametros(lista, var):
+    char = lista.pop(0)
+    while char != ')':
+        if char != ',':
+            var.append(char)
+        char = lista.pop(0)
+    return lista
+         
+         
+# ------------------
+# PROGRAMA
+# ------------------
 
 def task(archivo):
     while archivo:
@@ -56,17 +82,12 @@ def task(archivo):
             archivo.pop(0)
             parametros(archivo, variables)
             
-        elif palabra in extras:
-            pass
+        elif palabra == '{':
+            pos_final = complemeto_llave(archivo)
+            bloque = archivo[:pos_final]
+            # bla bla bla
+            archivo = archivo[pos_final+1:]
     
-def parametros(lista, var):
-    char = lista.pop(0)
-    while char != ')':
-        if char != ',':
-            var.append(char)
-        char = lista.pop(0)
-    return lista
-         
     
 print(lector('Practica.txt'))
 
