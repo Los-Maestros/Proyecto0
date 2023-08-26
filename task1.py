@@ -106,8 +106,8 @@ def analizar(lista):
                 error = 'Variable mal declarada'
                 status = False
         elif palabra == 'defProc':
+            funcion = lista[c+1]
             if(lista[c+2]=='('):
-                funcion = lista[c+1]
                 funciones_parametro[funcion] = []
                 while (lista[c+3] != ')') and status:
                     if lista[c+3] != ',':
@@ -124,8 +124,30 @@ def analizar(lista):
                 p_final = complemeto_llave(lista[c+2:])
                 bloque = lista[c+1:c+p_final]
                 cb = 0
-                while len(bloque) > 0 and status:
-                    pass
+                while len(bloque) > 1 and status:
+                    if bloque[0] in c_simple.keys():
+                        # es una funcion simple
+                        if (bloque[0] == 'nop') and (bloque[1] ==  '(') and bloque[2] ==  ')':
+                            bloque = bloque[3:]
+                        else:
+                            num_parameters = c_simple[bloque[0]][0]
+                    elif bloque[0] == 'if':
+                        # es un if
+                        pass
+                    elif bloque[0] == 'while':
+                        # es un while
+                        pass
+                    elif bloque[0] == 'repeat':
+                        # es un repeat
+                        pass
+                    else:
+                        error = 'Bloque ',funcion,' no encontrada'
+                        status = False
+                    if bloque[0] == ';' and bloque[1] == '}':
+                        error = 'Bloque ',funcion,' mal construido'
+                        status = False
+                # Terminamos de chequear el bloque
+                c += 1 + p_final
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
