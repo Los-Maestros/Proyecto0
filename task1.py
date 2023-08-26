@@ -99,12 +99,11 @@ cond_def = {'facing':[[1],['north', 'south', 'west', 'east']],
 def construir_parametros(lista):
     r = []
     c = 0
-    pf = 0
     while lista[c] != ')':
         if lista[c] != ',':
             r.append(lista[c])
-        pf += 1
-    return r,pf
+        c += 1
+    return r,c
         
 
 def analizar(lista):
@@ -142,7 +141,6 @@ def analizar(lista):
                 print(bloque)
                 print(funciones_parametro)
                 print(variables_parametro)
-                cb = 0
                 while len(bloque) > 1 and status:
                     if bloque[0] in c_simple.keys():
                         # es una funcion simple
@@ -150,25 +148,27 @@ def analizar(lista):
                             bloque = bloque[3:]
                         else:
                             num_parameters = c_simple[bloque[0]][0]
-                            parametros, pf = construir_parametros(bloque[1:])
-                            if len(parametros) > num_parameters:
-                                error = 'Funcion ',funcion,' con extra parametros'
+                            parametros, pf = construir_parametros(bloque[2:])
+                            print(parametros)
+                            if len(parametros) not in num_parameters:
+                                error = 'Funcion ',funcion,' con extra/menos parametros'
                                 status = False
                             else:
                                 if len(parametros) == 1:
                                     if 'turn' in parametros or 'turnto' in parametros:
-                                        pass
-                                    else:
-                                        if (c_simple[bloque[1]][1][0]==0) and not(i.isdigit()):
-                                            error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
+                                        if parametros[0] not in (c_simple[bloque[0]][1]):
+                                            error = 'Parametro ',parametros[0],' en la funcion ', bloque[0], ' no valido'
                                             status = False
-                                else:
-                                    if (len(c_simple[bloque[1]][0][0])>1) and (i not in c_simple[bloque[1]][1]):
-                                        error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
+                                    else:
+                                        if parametros[0] not in funciones_parametro[funcion] and not(parametros[0].isdigit()):
+                                            error = 'Parametro ',parametros[0],' en la funcion ', bloque[0], ' no valido'
+                                            status = False
+                                elif funcion == 'jump':
+                                    if not(parametros[0].isdigit()) or not(parametros[1].isdigit()):
+                                        error = 'Parametros ',parametros,' en la funcion ', bloque[0], ' no valido'
                                         status = False
-                                    if i not in funciones_parametro:
-                                        error = 'Parametro ',i,' en la funcion ', funcion, ' no valido'
-                                        status = False
+                                elif funcion == 'walk':
+                                    pass
                                 
                             
                     elif bloque[0] == 'if':
