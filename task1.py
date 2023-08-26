@@ -55,7 +55,7 @@ def lector2(texto):
 # ------------------
 
 def complemeto_llave(archivo):
-    cont = 1
+    cont = 0
     for i,j in enumerate(archivo):
         if j == '{':
             cont += 1
@@ -122,7 +122,8 @@ def analizar(lista):
                 status = False
             if lista[c+1] == '{':
                 p_final = complemeto_llave(lista[c+2:])
-                bloque = lista[c+1:c+p_final]
+                bloque = lista[c+1:c+3+p_final]
+                print(bloque)
                 cb = 0
                 while len(bloque) > 1 and status:
                     if bloque[0] in c_simple.keys():
@@ -161,7 +162,7 @@ def analizar(lista):
     else:
         print('El programa es correcto')
 
-print(lector('Practica.txt'))
+# print(lector('Practica.txt'))
 analizar(lector('Practica.txt'))
 
 
