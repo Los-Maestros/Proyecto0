@@ -4,14 +4,13 @@ funciones = [
     'jump', 'walk', 'leap', 'turn', 'turnto', 'drop', 'get', 'grab', 'letGo', 'nop', 'facing'
 ]
 
-variables = [
-    'north', 'south', 'east', 'west'
-]
+variables = {}
 
 extras = [
     'if', 'else', 'while', 'repeat', 'times', 'can', 'not'
 ]
 
+caracteres = ['{', '}', '(', ')', ';', ',']
 
 
 # -------------------
@@ -25,7 +24,6 @@ def lector(file):
     return lista
 
 def lector2(texto):
-    caracteres = ['{', '}', '(', ')', ';', ',']
     respuesta = []
     palabra = ''
     cont = 0
@@ -64,12 +62,20 @@ def complemeto_llave(archivo):
                 return i
             cont -= 1
 
-def parametros(lista, var):
+def parametros(lista, nombre):
     char = lista.pop(0)
+    comas = 0
     while char != ')':
         if char != ',':
-            var.append(char)
-        char = lista.pop(0)
+            comas +=1
+            assert char not in caracteres, f'Función {nombre} con parametros {char}' #? Se verifica que no sea un caracter especial la variable
+            
+            if nombre not in funciones:
+                funciones[nombre] = []
+            funciones[nombre].append(char)
+        char = lista.pop(0)   
+        comas -= 1 
+    assert not comas, f'Función {nombre} con malos parametros'
     return lista
          
 
@@ -171,18 +177,23 @@ analizar(lector('Practica.txt'))
 # ------------------
 
 def task(archivo):
-    while archivo:
+    error = False
+    while archivo and not error:
         palabra = archivo.pop(0)
         
         if palabra == 'defVar':
-            variable = archivo.pop(0)
-            variables.append(variable)
+            nombre = archivo.pop(0)
+            valor = archivo.pop(0)
+            
+            assert nombre not in caracteres, 'Variable mal declarada'
+            assert valor not in caracteres, 'Valor mal declarado'
+            variables[nombre] = valor
         
         elif palabra == 'defProc':
             nombre = archivo.pop(0)
             funciones.append(nombre)
             archivo.pop(0)
-            parametros(archivo, variables)
+            parametros(archivo, nombre)
             
         elif palabra == '{':
             pos_final = complemeto_llave(archivo)
