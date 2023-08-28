@@ -17,7 +17,7 @@ defProc goNorth ()
 
 defProc goWest ()
 {
-    if can(walk(1 , west ) ) { walk(1 , west ) } else nop ()
+    if can(walk(1 , west ) ) { walk(1 , west ) } else {nop ()}
 }
 
 defProc doTest (a,b,c)

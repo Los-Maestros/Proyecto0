@@ -218,8 +218,8 @@ def analizar_if(bloque, status, error, funciones_parametro, funcion):
     else:
         error = 'Condicion ',bloque[1],' no valida'
         status = False
-    if bloque[0] == 'else':
-        bloque = bloque[1:]
+    if bloque[0] == 'else' and bloque[1] == '{':
+        bloque = bloque[2:]
         bloque, status, error = analizar_bloque(bloque, status, funcion)
     else:
         error = 'Sintaxis no valida'
