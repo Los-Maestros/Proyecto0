@@ -20,6 +20,13 @@ defProc goWest ()
     if can(walk(1 , west ) ) { walk(1 , west ) } else nop ()
 }
 
+defProc doTest (a,b,c)
+{
+    while not(facing(north) ) { jump(a,b); turn(left) };
+    grab(c);
+    repeat x times {get(one); leap(nom, front)}
+}
+
 {
 jump (3 ,3) ;
 putCB (2 ,1)
