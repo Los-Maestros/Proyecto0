@@ -265,6 +265,7 @@ def analizar_repeat(bloque, status, error, funciones_parametro, funcion):
         status = False
     else:
         if bloque[2] == 'times':
+            bloque = bloque[4:]
             bloque, status, error = analizar_bloque(bloque, status, funcion)
         else:
             error = 'Sintaxis no valida'
