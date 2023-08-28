@@ -251,6 +251,8 @@ def analizar_while(bloque, status, error, funciones_parametro, funcion):
                 bloque, status, error = analizar_c_simple(bloque, status, error, funciones_parametro, funcion)
         if bloque[1] == '{':
             bloque = bloque[2:]
+            # hasta aca todo iba bien
+            print(bloque,'bloque en while')
             bloque, status, error = analizar_bloque(bloque, status, funcion)
         else:
             error = 'Sintaxis no valida'
@@ -280,12 +282,14 @@ def analizar_funcion_parametro(bloque, status, error, funciones_parametro):
         error = 'Funcion ',bloque[0],' con extra/menos parametros'
         status = False
     else:
+        varfunc = bloque[0]
         for i in parametros:
-            if i not in variables_parametro.keys() and not(i.isdigit()):
+            if i not in variables_parametro.keys() and not(i.isdigit()) and (i+varfunc) not in variables_parametro.keys():
                 error = 'Parametro ',i,' en la funcion ', bloque[0], ' no valido'
                 status = False
             else:
                 bloque = bloque[3+pf:]
+        print(bloque)
     return bloque, status, error
 
 def analizar(lista):
@@ -317,6 +321,8 @@ def analizar(lista):
                         status = False
                     c += 1
                 c += 3
+                for i in funciones_parametro[funcion]:
+                    variables_parametro[i+funcion]='0'
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
@@ -349,6 +355,8 @@ def analizar(lista):
             else:
                 error = 'Funcion ',funcion,' mal declarada'
                 status = False
+            for i in funciones_parametro[funcion]:
+                del variables_parametro[i+funcion]
         elif palabra == '{':
             funcion = 'none'
             bloque = lista[c+1:]
@@ -365,92 +373,3 @@ def analizar(lista):
 
 # print(lector('Practica.txt'))
 analizar(lector('Practica.txt'))
-
-
-# ------------------
-# PROGRAMA
-# ------------------
-
-def task(archivo):
-    error = False
-    while archivo and not error:
-        palabra = archivo.pop(0)
-        
-        if palabra == 'defVar':
-            nombre = archivo.pop(0)
-            valor = archivo.pop(0)
-            
-            assert nombre not in caracteres, 'Variable mal declarada'
-            assert valor not in caracteres, 'Valor mal declarado'
-            variables[nombre] = valor
-        
-        elif palabra == 'defProc':
-            nombre = archivo.pop(0)
-            funciones.append(nombre)
-            archivo.pop(0)
-            parametros(archivo, nombre)
-            
-            assert archivo.pop(0) == '{', 'Función mal delarada'
-            pos_final = complemeto_llave(archivo)
-            bloque = archivo[:pos_final]
-            
-            for pos, pal in enumerate(bloque):
-                if pal in c_simple:
-                    num_parametros = cont_parametros(bloque[pos:])
-                    assert num_parametros in c_simple[pal][0], f'La función {pal}, no tiene todos los parametros.'
-                        
-                        
-            
-            
-            archivo = archivo[pos_final+1:]
-    
-    
-
-
-
-
-# -------------------------------
-# EJEMPLO
-# -------------------------------
-
-def handle_go( u ):
-    print( "going %d units" % int(u))
-
-def handle_rotate( direc ):
-    print( "rotating %s" % direc.lower() )
-
-def handle_drill():
-    print( "drilling" )
-
-def find_matching_brace(body):
-    nest = 0
-    for i, n in enumerate(body):
-        if n == '{':
-            nest += 1
-        if n == '}':
-            if not nest:
-                return i
-            nest -= 1
-
-
-def process(body):
-    while body:
-        verb = body.pop(0)
-        if verb == "GO":
-            handle_go( body.pop(0) )
-            assert body.pop(0) == 'UNITS'
-        elif verb == "ROTATE":
-            handle_rotate(body.pop(0))
-        elif verb == "DRILL":
-            handle_drill()
-        elif verb == "REPEAT":
-            count = body.pop(0)
-            assert body.pop(0)=="TIMES"
-            assert body.pop(0)=="{"
-            closing = find_matching_brace(body)
-            newbody = body[0:closing]
-            print("repeat", count, closing, newbody)
-            for _ in range(int(count)):
-                process(newbody[:])
-            body = body[closing+1:]
-# %%
