@@ -251,8 +251,6 @@ def analizar_while(bloque, status, error, funciones_parametro, funcion):
                 bloque, status, error = analizar_c_simple(bloque, status, error, funciones_parametro, funcion)
         if bloque[1] == '{':
             bloque = bloque[2:]
-            # hasta aca todo iba bien
-            print(bloque,'bloque en while')
             bloque, status, error = analizar_bloque(bloque, status, funcion)
         else:
             error = 'Sintaxis no valida'
@@ -289,7 +287,6 @@ def analizar_funcion_parametro(bloque, status, error, funciones_parametro):
                 status = False
             else:
                 bloque = bloque[3+pf:]
-        print(bloque)
     return bloque, status, error
 
 def analizar(lista):
@@ -330,7 +327,6 @@ def analizar(lista):
                 p_final = complemeto_llave(lista[c+2:])
                 bloque = lista[c+2:c+3+p_final]
                 while len(bloque) > 1 and status:
-                    print(bloque, 'Bloque')
                     if bloque[0] in c_simple.keys():
                         bloque, status, error = analizar_c_simple(bloque, status, error, funciones_parametro, funcion)                        
                     elif bloque[0] == 'if':
@@ -358,6 +354,7 @@ def analizar(lista):
             for i in funciones_parametro[funcion]:
                 del variables_parametro[i+funcion]
         elif palabra == '{':
+            p_final = complemeto_llave(lista[c+2:])
             funcion = 'none'
             bloque = lista[c+1:]
             bloque, status, error = analizar_bloque(bloque, status, funcion)

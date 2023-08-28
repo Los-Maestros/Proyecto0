@@ -32,6 +32,11 @@ defProc doTest2 (a,b)
     while can(walk(1,north)) {doTest2(a,b)}
 }
 
+defProc doTest3 ()
+{
+    nop()
+}
+
 {
 jump (3 ,3) ;
 putCB (2 ,1)
