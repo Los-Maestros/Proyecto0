@@ -37,6 +37,23 @@ defProc doTest3 ()
     nop()
 }
 
+defProc doTest4 ()
+{
+    if can(walk(1 , west ) ) { walk(1 , west ) } else {while can(walk(1 , north ) ) { walk(1 , north ) }}
+}
+
+defProc doTest5 ()
+{
+    while can(walk(1 , north ) ) { while can(walk(1 , north ) ) { while can(walk(1 , north ) ) { walk(1 , north ) } } }
+}
+
+defProc doTest6 ()
+{
+    nop();
+    nop();
+    nop()
+}
+
 {
 jump (3 ,3) ;
 putCB (2 ,1)

@@ -28,6 +28,9 @@ cond_def = {
     'not' : ['facing', 'can', 'not']
     }
 
+# diccionarios con las variables y funciones construidas por el usuario
+variables_parametro = {}
+funciones_parametro = {}
 
 # -------------------
 # CARGA DE DATOS
@@ -103,9 +106,9 @@ def cont_parametros(texto):
         pos += 1
     return cont
 
-# diccionarios con las variables y funciones construidas por el usuario
-variables_parametro = {}
-funciones_parametro = {}
+# -------------------
+# MAIN
+# -------------------
 
 def construir_parametros(lista):
     r = []
@@ -296,7 +299,6 @@ def analizar(lista):
     car = ['{', '}', '(', ')', ';', ',']
     while len(lista) > c and status:
         palabra = lista[c]
-        print(lista[c:], 'Lista final')
         if palabra == 'defVar':
             # CHEQUEO PARA VARIABLES
             if((lista[c+1] not in car) and (lista[c+2] not in car)):
