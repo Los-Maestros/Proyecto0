@@ -147,7 +147,6 @@ def analizar_bloque(bloque_completo, funcion, status):
         bloque_final = bloque_completo[p_final+1:]
     return bloque_final, status, error
     
-
 def analizar_c_simple(bloque, status, error, funciones_parametro, funcion):
     # analizar una funcion simple
     error = ''
@@ -252,12 +251,7 @@ def analizar_while(bloque, status, error, funciones_parametro, funcion):
                 bloque, status, error = analizar_c_simple(bloque, status, error, funciones_parametro, funcion)
         if bloque[1] == '{':
             bloque = bloque[2:]
-            #p_final = complemeto_llave(bloque)
-            #bloque_parte = bloque[:p_final]
-            #print(bloque_parte, 'Bloque analizado')
             bloque, status, error = analizar_bloque(bloque, status, funcion)
-            #bloque = bloque_parte[1:]+ bloque[p_final:]
-            #print(bloque, 'parte 1')
         else:
             error = 'Sintaxis no valida'
             status = False
@@ -271,7 +265,6 @@ def analizar_repeat(bloque, status, error, funciones_parametro, funcion):
         status = False
     else:
         if bloque[2] == 'times':
-            bloque = bloque[3:]
             bloque, status, error = analizar_bloque(bloque, status, funcion)
         else:
             error = 'Sintaxis no valida'
