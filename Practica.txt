@@ -1,26 +1,38 @@
 defVar nom 0
 defVar x 0
 defVar y 0
-defVar one 0
+defVar one 7
+defVar xd south
 
 defProc putCB (c , b)
 {
     drop( c ) ;
     letGo( b ) ;
-    walk( one )
+    walk( one ) 
 }
+
 
 defProc goNorth ()
 {
-    while can(walk(1 , north ) ) { walk(1 , north ) }
+    while not( can( walk(1 , north ) ) ) { walk(1 , north ) }
 }
 
 defProc goWest ()
 {
-    if can(walk(1 , west ) ) { walk(1 , west ) } else nop ()
+    if can(walk(1 , west ) ) { walk(1 , west ) } else {nop ()}
 }
+
+
+defProc doThat (a, b, c)
+{
+    while not ( facing(north) ) { jump(a, b); turn(left) };
+    grab(c);
+    repeat x times { get(one); leap(nom, front) }
+}
+
 
 {
 jump (3 ,3) ;
-putCB (2 ,1)
+putCB (2 ,1) ;
+doThat (1, 2, 3)
 }
