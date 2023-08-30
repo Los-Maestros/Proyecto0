@@ -130,19 +130,20 @@ def agregar_parametros(lista, nombre):
     cero_comas = True
     
     if nombre not in funciones:
-        funciones[nombre] = []
+        funciones[nombre] = [[],[]]
     
     while char != ')':
         if char != ',':
             comas -=1
             verificar_caracter(char)
-            funciones[nombre].append(char)
+            funciones[nombre][0].append(char)
         
         else:
             comas += 1 
         char = lista.pop(0)  
         cero_comas = False
-    
+        
+    funciones[nombre][1] = len(funciones[nombre][0])*[None]
     if cero_comas:
         comas -= 1 
     assert not comas, f'Función \"{nombre}\" con malos parametros.'
@@ -187,7 +188,13 @@ def verificar_funcion_simple(bloque, funcion, esFuncion):
     if len(lst_parametros):
         tipo1 = lst_parametros[0] in funciones_simple[funcion][1][0]
         if esFuncion:
-            existe1 = lst_parametros[0] in funciones[esFuncion] 
+            existe1 = lst_parametros[0] in funciones[esFuncion][0] 
+            
+            if existe1:
+                tipo = funciones_simple[funcion][1][0]
+                numero = funciones[esFuncion][0].index(lst_parametros[0])
+                funciones[esFuncion][1][numero] = tipo
+            
             resultado1 = existe1 or tipo1
         else:
             resultado1 = tipo1
@@ -196,8 +203,14 @@ def verificar_funcion_simple(bloque, funcion, esFuncion):
             tipo2 = lst_parametros[1] in funciones_simple[funcion][1][1]
             
             if esFuncion:
-                existe2 = lst_parametros[1] in funciones[funcion]
+                existe2 = lst_parametros[1] in funciones[esFuncion][0]
                 resultado2 = existe2 or tipo2
+                
+                if existe2:
+                    tipo = funciones_simple[funcion][1][1]
+                    numero = funciones[esFuncion][0].index(lst_parametros[1])
+                    funciones[esFuncion][1][numero] = tipo
+            
             else:
                 resultado2 = tipo2
                 
@@ -258,8 +271,12 @@ def bloques(archivo, esFuncion = ''):
             
         elif pal in funciones:
             lst_parametros = lista_parametros(bloque) 
-            assert len(lst_parametros) == len(funciones[pal]), f'La cantidad de parametros ingresados de la función {pal}, es erronea.'
-            #! No esta completo, falta que el tipo de variable ingresado sea correcto.
+            assert len(lst_parametros) == len(funciones[pal][0]), f'La cantidad de parametros ingresados de la función {pal}, es erronea.'
+        
+            if not esFuncion:
+                for i, j in enumerate(lst_parametros):
+                    
+                    assert funciones[pal][1][i] is None or j in funciones[pal][1][i], f'El tipo de variable de la funcion {pal}, no coincide.'
             
         else:
             assert False, 'Hay algo dentro de un bloque de codigo que no deberia ir ahí.'
@@ -304,9 +321,9 @@ def task(archivo):
 
 if __name__ == '__main__':
     print('\n¡¡Bienvenido al verificador de Sintaxis!!\n')
-    nombre_archivo = input('Ingrese el nombre del archivo que quiere analizar -> ')
-    archivo = lector(nombre_archivo)
+    # nombre_archivo = input('Ingrese el nombre del archivo que quiere analizar -> ')
+    archivo = lector('pruebas.txt')
     verificado = task(archivo)
     
     if verificado:
-        print(f'\nLa sintaxis del archivo {nombre_archivo} es correcto :D')
+        print(f'\nLa sintaxis del archivo ola es correcto :D')

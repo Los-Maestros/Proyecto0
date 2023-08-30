@@ -2,6 +2,7 @@ defVar nom 0
 defVar x 0
 defVar y 0
 defVar one 0
+defVar listo north
 
 defProc putCB (c , b)
 {
@@ -10,9 +11,9 @@ defProc putCB (c , b)
     walk( one )
 }
 
-defProc goNorth ()
+defProc goNorth (buenas)
 {
-    while can(walk(1 , north ) ) { walk(1 , north ) }
+    while can(walk(1 , buenas ) ) { walk(1 , north ) }
 }
 
 defProc goWest ()
@@ -23,13 +24,13 @@ defProc goWest ()
 defProc doTest (a,b,c)
 {
     while not(facing(north) ) { jump(a,b); turn(left) };
-    grab(c);
-    repeat x times {get(one); leap(nom, front)}
+    grab(nom);
+    repeat x times {get(one); leap(nom, c)}
 }
 
 defProc doTest2 (a,b)
 {
-    while can(walk(1,north)) {doTest2(a,b)}
+    while can(walk(1,listo)) {doTest2(a,b)}
 }
 
 defProc doTest3 ()
@@ -56,5 +57,6 @@ defProc doTest6 ()
 
 {
 jump (3 ,3) ;
-putCB(2 ,1)
+putCB(2 ,1);
+doTest2(1,2)
 }
