@@ -321,9 +321,8 @@ def task(archivo):
 
 if __name__ == '__main__':
     print('\n¡¡Bienvenido al verificador de Sintaxis!!\n')
-    # nombre_archivo = input('Ingrese el nombre del archivo que quiere analizar -> ')
-    archivo = lector('pruebas.txt')
-    verificado = task(archivo)
+    nombre_archivo = input('Ingrese el nombre del archivo que quiere analizar -> ')
+    verificado = task(nombre_archivo)
     
     if verificado:
-        print(f'\nLa sintaxis del archivo ola es correcto :D')
+        print(f'\nLa sintaxis del archivo {nombre_archivo} es correcto :D')
