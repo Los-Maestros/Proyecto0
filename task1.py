@@ -263,7 +263,16 @@ def bloques(archivo, esFuncion = ''):
                         
         elif pal == 'repeat':
             valor = verificar_variable(bloque.pop(0))
-            assert valor == 'int', f'La variable \"{valor}\", tiene que ser un entero.'
+            
+            if esFuncion:
+                validar = valor in funciones[esFuncion][0]
+                if validar:
+                    numero = funciones[esFuncion][0].index(valor)
+                    funciones[esFuncion][1][numero] = 'int'
+            else:
+                validar = False
+            
+            assert valor == 'int' or validar, f'La variable \"{valor}\", tiene que ser un entero.'
             assert bloque.pop(0) == 'times', 'Despues del valor tiene que ir times.'
             assert bloque.pop(0) == '{', 'Despues de un times, tiene que ir un bloque.'
             pos_f = bloques(bloque, esFuncion)

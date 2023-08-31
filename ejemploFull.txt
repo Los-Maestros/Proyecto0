@@ -1,0 +1,139 @@
+
+
+defVar variable1 0
+
+        defVar variable2 6
+    
+        defVar variable3 0
+
+defProc myProc (param1, param2, param3)
+{
+    if facing(north)
+    {
+        myProc(variable1, variable2, variable3)
+    }
+    else
+    {
+        turnto(north)
+    } ; 
+    if not( facing(north))
+    {
+        turnto(north)
+    } else { nop()}; 
+    if can(walk(1, front))
+    {
+        walk(1, front)
+    }
+    else
+    {
+        walk(1, north)
+    } ; 
+    if not( facing(north))
+    {
+        turnto(north)
+    } else { nop()}; 
+    if can(walk(1, front))
+    {
+        walk(variable1, front)
+    }
+    else
+    {
+        walk(1, north)
+    } ;
+    if not( not( facing(north)))
+    {
+        turnto(north)
+    } else { nop()};
+    if can(walk(1, front))
+    {
+        walk(1, front)
+    } 
+    else
+    {
+        walk(1, north)
+    };
+    if not (facing(north))
+    {
+        turnto(north)
+    } else { nop()};
+    if can(walk(1, front))
+    {
+        while facing(north)
+        {
+            walk(1, front)
+        } ; 
+        repeat param1 times
+        {
+            walk(1, front)
+        }
+    }
+    else
+    {
+        if facing(north)
+        {
+            walk(1, front)
+        }
+        else
+        {
+           nop()
+        }
+    } ;
+    if not (facing(north))
+    {
+        turnto(north)
+    } else { nop()};
+    if can(walk(1, front))
+    {
+        jump(1, 1)
+    }
+    else
+    {
+       letGo(1)
+    } ;
+    if not (facing(north))
+    {
+        turnto(north)
+    } else { nop()};
+    if can(walk(1, front))
+    {
+       grab(1) }
+    else
+    {
+        drop(1)
+    } ;
+    if not (facing(north))
+    {
+        get(1)
+    }else { nop()}
+}
+
+defProc myProc2 (param1, param2, param3)
+{
+    walk(param1, front)  ;  leap(param2, front)  ;  walk(param3, front)  
+    ;  turnto(north)  ;  walk(1, front)  ;  turnto(east)  ; 
+     walk(variable3, front)  ;  turnto(south)  ;  walk(1, front)  ; 
+      turnto(west)  ;  walk(variable1, front)  ;  turnto(north)  ; 
+       walk(variable2, front)  ;  turnto(east)  ;  walk(1, front)  ; 
+        turnto(south) ;  turnto(north); myProc(1, 2, 3); nop()
+}
+    
+
+
+{
+    myProc(1, 2, 3);
+    myProc2(1, 2, 3);
+    walk(1, front);     jump(1, 1); nop()
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
