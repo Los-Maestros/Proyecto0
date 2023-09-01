@@ -36,6 +36,7 @@ condicionales = {
 def lector(file):
     archivo = open(file, 'r')
     texto = archivo.read().replace('\n',' ')
+    archivo.close()
     lista = lector2(texto)
     return lista
 
