@@ -1,0 +1,35 @@
+defVar nom 5
+walk( nom )
+defProc goNorth ()
+{
+while can(walk(1 , north )) { walk(1 , north ) }
+}
+{
+goNorth () ;
+nom = 2;
+if can(drop( nom ) )
+{
+drop( nom )
+}
+else { nop () };
+leap (5)
+}
+defProc fill ()
+{
+while can(drop(1) ) {drop(1) }
+}
+defProc safeWalk ( n )
+{
+if can(walk( n ) ) { walk( n ) } else { nop () }
+}
+{
+jump (1 ,1) ;
+fill () ;
+repeat 7 times {
+turnto ( west ) ;
+safeWalk (1) ;
+turnto ( south ) ;
+safeWalk (1) ;
+fill ()
+}
+}
