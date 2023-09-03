@@ -36,7 +36,7 @@ condicionales = {
 def lector(file):
     archivo = open(file, 'r')
     texto = archivo.read().replace('\n',' ')
-    lista = lector2(texto)
+    lista = lector2(texto.lower())
     archivo.close()
     return lista
 
@@ -303,7 +303,7 @@ def task(archivo):
     while archivo:
         palabra = archivo.pop(0)
         
-        if palabra == 'defVar':
+        if palabra == 'defvar':
             nombre = archivo.pop(0)
             valor = entero(archivo.pop(0))
             
@@ -311,7 +311,7 @@ def task(archivo):
             assert valor not in caracteres, f'Valor \"{valor}\" mal declarado.'
             variables[nombre] = valor
         
-        elif palabra == 'defProc':
+        elif palabra == 'defproc':
             nombre = archivo.pop(0)
             archivo.pop(0)
             agregar_parametros(archivo, nombre)
