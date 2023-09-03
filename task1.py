@@ -289,7 +289,10 @@ def bloques(archivo, esFuncion = ''):
                     assert funciones[pal][1][i] is None or j in funciones[pal][1][i], f'El tipo de variable de la funcion {pal}, no coincide.'
             
         else:
-            assert False, 'Hay algo dentro de un bloque de codigo que no deberia ir ahí.'
+            igual = bloque.pop(0)
+            assert igual == '=', 'Hay algo dentro de un bloque de codigo que no deberia ir ahí.'
+            valor = entero(bloque.pop(0))
+            variables[pal] = valor
                
         assert verificar_puntocoma(bloque), f'Los ; estan mal puestos en una función.'
     return pos_final
