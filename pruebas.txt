@@ -1,5 +1,5 @@
 defVar nom 5
-{walk( nom )}
+walk( nom )
 
 defProc goNorth ()
 {

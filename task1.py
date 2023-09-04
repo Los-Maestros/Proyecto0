@@ -223,6 +223,17 @@ def verificar_funcion_simple(bloque, funcion, esFuncion):
     return bloque
 
 
+def verificar_funcion_compuesta(bloque, funcion, esFuncion):
+    lst_parametros = lista_parametros(bloque) 
+    assert len(lst_parametros) == len(funciones[funcion][0]), f'La cantidad de parametros ingresados de la función {funcion}, es erronea.'
+
+    if not esFuncion:
+        for i, j in enumerate(lst_parametros):
+            
+            assert funciones[funcion][1][i] is None or j in funciones[funcion][1][i], f'El tipo de variable de la funcion {funcion}, no coincide.'
+    return bloque
+
+
 def verificar_puntocoma(bloque):
     if len(bloque) > 0:
         punto_coma = bloque.pop(0)
@@ -280,14 +291,8 @@ def bloques(archivo, esFuncion = ''):
             bloque = bloque[pos_f+1:]
             
         elif pal in funciones:
-            lst_parametros = lista_parametros(bloque) 
-            assert len(lst_parametros) == len(funciones[pal][0]), f'La cantidad de parametros ingresados de la función {pal}, es erronea.'
-        
-            if not esFuncion:
-                for i, j in enumerate(lst_parametros):
-                    
-                    assert funciones[pal][1][i] is None or j in funciones[pal][1][i], f'El tipo de variable de la funcion {pal}, no coincide.'
-            
+            verificar_funcion_compuesta(bloque, pal, esFuncion) 
+                       
         else:
             igual = bloque.pop(0)
             assert igual == '=', 'Hay algo dentro de un bloque de codigo que no deberia ir ahí.'
@@ -323,6 +328,12 @@ def task(archivo):
             pos_final = bloques(archivo)
             archivo = archivo[pos_final+1:]
             
+        elif palabra in funciones_simple:
+            verificar_funcion_simple(archivo, palabra, '')
+        
+        elif palabra in funciones:
+            verificar_funcion_compuesta(archivo, palabra, '')
+        
         else:
             assert False, 'Hay algo fuera de un bloque de codigo que no deberia ir ahí.'
             
